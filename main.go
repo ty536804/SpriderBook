@@ -10,8 +10,8 @@ func main() {
 	//reader := bufio.NewReader(os.Stdin)
 	//Console.ActTable(reader)
 	e := engine.ConcurrentEngine{
-		Scheduler:   &scheduler.SimpleScheduler{},
-		WorkerCount: 613,
+		Scheduler:   &scheduler.QueuedScheduler{},
+		WorkerCount: 100,
 	}
 	e.Run(engine.Request{
 		Url:      "http://www.xbiquge.la/fenlei/1_1.html",
