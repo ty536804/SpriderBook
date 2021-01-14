@@ -3,17 +3,22 @@ package biquge
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"regexp"
 	"testing"
 )
 
 func TestClimbDetail(t *testing.T) {
-	body, err := ioutil.ReadFile("detail.html")
+	resp, err := http.Get("http://www.xbiquge.la/10/10489/")
 	if err != nil {
 		panic(err)
 	}
-	// http://www.xbiquge.la/files/article/image/72/72327/72327s.jpg
+	defer resp.Body.Close()
+	res, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
 	re := regexp.MustCompile(`<p>[\s\S]+?者：([\s\S]+?)</p>`)
-	matches := re.FindSubmatch(body)
-	fmt.Printf("%s \n",matches[1])
+	matches := re.FindSubmatch(res)
+	fmt.Printf("%s \n", matches[1])
 }
