@@ -1,8 +1,9 @@
 package persist
 
 import (
+	"Book/Models"
 	"context"
-	"fmt"
+	"encoding/json"
 	"github.com/olivere/elastic"
 )
 
@@ -20,11 +21,11 @@ func ItemSaver() chan interface{} {
 	return out
 }
 
-func save(item interface{}) {
+func save(item interface{}) (id string, err error) {
 	client, err := elastic.NewClient(
 		elastic.SetSniff(false))
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	resp, err := client.Index().
 		Index("dating_profile").
@@ -32,7 +33,30 @@ func save(item interface{}) {
 		BodyJson(item).
 		Do(context.Background())
 	if err != nil {
+		return "", err
+	}
+	return resp.Id, nil
+}
+
+// 查找
+func Search(id string) Models.Book {
+	client, err := elastic.NewClient(
+		elastic.SetSniff(false))
+	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("%+v", resp)
+	resp, err := client.Get().
+		Index("dating_profile").
+		Type("book").
+		Id(id).
+		Do(context.Background())
+	if err != nil {
+		panic(err)
+	}
+	var actual Models.Book
+	err = json.Unmarshal(*resp.Source, &actual)
+	if err != nil {
+		panic(err)
+	}
+	return actual
 }
