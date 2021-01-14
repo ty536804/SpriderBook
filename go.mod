@@ -11,6 +11,9 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/jinzhu/gorm v1.9.16
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/mailru/easyjson v0.7.6 // indirect
+	github.com/olivere/elastic v6.2.35+incompatible
+	github.com/olivere/elastic/v7 v7.0.22 // indirect
 	github.com/prometheus/client_golang v1.9.0 // indirect
 	github.com/shiena/ansicolor v0.0.0-20200904210342-c7312218db18 // indirect
 	github.com/ugorji/go v1.2.2 // indirect

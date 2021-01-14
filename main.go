@@ -3,6 +3,7 @@ package main
 import (
 	"Book/Crawler/biquge"
 	"Book/Crawler/engine"
+	"Book/Crawler/persist"
 	"Book/Crawler/scheduler"
 )
 
@@ -12,6 +13,7 @@ func main() {
 	e := engine.ConcurrentEngine{
 		Scheduler:   &scheduler.QueuedScheduler{},
 		WorkerCount: 100,
+		ItemChan:    persist.ItemSaver(),
 	}
 	e.Run(engine.Request{
 		Url:      "http://www.xbiquge.la/fenlei/1_1.html",
