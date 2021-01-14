@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/olivere/elastic"
+	"log"
 )
 
 func ItemSaver() chan interface{} {
@@ -13,7 +14,10 @@ func ItemSaver() chan interface{} {
 		//itemCount :=0
 		for {
 			item := <-out
-			save(item)
+			_, err := save(item)
+			if err != nil {
+				log.Printf("Item Saver:error saving item %v: %v", item, err)
+			}
 			//log.Printf("Item Saver:got item #%d:%v",itemCount,item)
 			//itemCount++
 		}
