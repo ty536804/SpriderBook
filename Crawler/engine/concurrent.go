@@ -3,7 +3,7 @@ package engine
 type ConcurrentEngine struct {
 	Scheduler   Scheduler
 	WorkerCount int
-	ItemChan    chan interface{} //数据存储
+	ItemChan    chan Item //数据存储
 }
 
 type Scheduler interface {

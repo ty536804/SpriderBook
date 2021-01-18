@@ -9,7 +9,9 @@ import (
 	"golang.org/x/text/transform"
 	"io"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
+	"time"
 )
 
 //全局请求头
@@ -50,27 +52,28 @@ var UserAgent []string = []string{"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT
 }
 
 // @Summer 发起请求地址
-//var rateLimiter = time.Tick(1000 * time.Millisecond)
-func Fetch(url string) (contents []byte, err error) {
-	//<-rateLimiter
-	//rand.Seed(time.Now().UnixNano())
-	//i := rand.Intn(34)
+var rateLimiter = time.Tick(1000 * time.Millisecond)
 
-	//client := &http.Client{}
-	//req, err := http.NewRequest("GET", url, nil)
-	//if err != nil {
-	//	fmt.Println("上下文请求出错:", err)
-	//	return nil, err
-	//}
-	//req.Header.Set("User-Agent", UserAgent[i])
-	//resp, err := client.Do(req)
-	resp,err := http.Get(url)
-	if err != nil || err == io.EOF{
+func Fetch(url string) (contents []byte, err error) {
+	<-rateLimiter
+	rand.Seed(time.Now().UnixNano())
+	i := rand.Intn(34)
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		fmt.Println("上下文请求出错:", err)
+		return nil, err
+	}
+	req.Header.Set("User-Agent", UserAgent[i])
+	resp, err := client.Do(req)
+	//resp,err := http.Get(url)
+	if err != nil || err == io.EOF {
 		fmt.Println("请求出错", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK{
+	if resp.StatusCode != http.StatusOK {
 		fmt.Println("状态码", resp.StatusCode)
 		return nil, err
 	}

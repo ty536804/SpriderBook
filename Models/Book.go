@@ -1,6 +1,9 @@
 package Models
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type Book struct {
 	Id               int       `json:"id" gorm:"primary_key;"`
@@ -18,4 +21,14 @@ type Book struct {
 	UpdatedAt        string    `json:"updated_at" gorm:"comment:'最近一次更新时间'"`
 
 	BookS []BookList
+}
+
+func FormJsonObj(o interface{}) (Book, error) {
+	var book Book
+	s, err := json.Marshal(o)
+	if err != nil {
+		return book, err
+	}
+	err = json.Unmarshal(s, &book)
+	return book, err
 }

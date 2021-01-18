@@ -10,10 +10,14 @@ import (
 func main() {
 	//reader := bufio.NewReader(os.Stdin)
 	//Console.ActTable(reader)
+	itemChan, err := persist.ItemSaver()
+	if err != nil {
+		panic(err)
+	}
 	e := engine.ConcurrentEngine{
 		Scheduler:   &scheduler.QueuedScheduler{},
 		WorkerCount: 100,
-		ItemChan:    persist.ItemSaver(),
+		ItemChan:    itemChan,
 	}
 	e.Run(engine.Request{
 		Url:      "http://www.xbiquge.la/fenlei/1_1.html",

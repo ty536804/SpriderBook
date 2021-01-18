@@ -1,20 +1,27 @@
 package persist
 
 import (
+	"Book/Crawler/engine"
 	"Book/Models"
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/olivere/elastic"
 	"log"
 )
 
-func ItemSaver() chan interface{} {
-	out := make(chan interface{})
+func ItemSaver() (chan engine.Item, error) {
+	out := make(chan engine.Item)
+	client, err := elastic.NewClient(
+		elastic.SetSniff(false))
+	if err != nil {
+		return nil, err
+	}
 	go func() {
 		//itemCount :=0
 		for {
 			item := <-out
-			_, err := save(item)
+			err := save(client, item)
 			if err != nil {
 				log.Printf("Item Saver:error saving item %v: %v", item, err)
 			}
@@ -22,24 +29,27 @@ func ItemSaver() chan interface{} {
 			//itemCount++
 		}
 	}()
-	return out
+	return out, nil
 }
 
-func save(item interface{}) (id string, err error) {
-	client, err := elastic.NewClient(
-		elastic.SetSniff(false))
-	if err != nil {
-		return "", err
+func save(client *elastic.Client, item engine.Item) error {
+
+	if item.Type == "" {
+		return errors.New("must supply type")
 	}
-	resp, err := client.Index().
+	indexServer := client.Index().
 		Index("dating_profile").
-		Type("book").
-		BodyJson(item).
+		Type(item.Type).
+		BodyJson(item)
+	if item.Id != "" {
+		indexServer.Id(item.Id)
+	}
+	_, err := indexServer.
 		Do(context.Background())
 	if err != nil {
-		return "", err
+		return err
 	}
-	return resp.Id, nil
+	return nil
 }
 
 // 查找
